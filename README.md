@@ -12,6 +12,5 @@ A simple shopping application built with Flutter. This app allows users to brows
 
 ## Screenshots
 
-![Simulator Screenshot - iPhone 15 Pro Max - 2024-06-30 at 16 32 49](https://github.com/Kellytomi/Shopping-App/assets/111574099/dbc566b1-91b9-4066-b3f5-7a0a14142631)
-
-
+![Checkout Page](https://github.com/Kellytomi/Shopping-App/assets/111574099/dbc566b1-91b9-4066-b3f5-7a0a14142631)
+![Cart](https://github.com/Kellytomi/Shopping-App/assets/111574099/13b5d229-617a-4708-acdc-de014318425a)
