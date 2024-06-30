@@ -25,5 +25,5 @@ To get started with the Shopping App, follow these steps:
    git clone https://github.com/yourusername/Shopping-App.git
    cd Shopping-App
 
-2. **Install Dependencies
-   ```flutter pub get
+2. **Install Dependencies**:
+   ```flutter pub get```
