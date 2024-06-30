@@ -26,4 +26,5 @@ To get started with the Shopping App, follow these steps:
    cd Shopping-App
 
 2. **Install Dependencies**:
-   ```flutter pub get```
+   ```bash
+   flutter pub get
