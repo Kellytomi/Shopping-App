@@ -34,23 +34,24 @@ To get started with the Shopping App, follow these steps:
    Flutter run
 
 ## Usage
+
 **Home Page**
 
--Browse the list of available products.
--Use the search bar to filter products.
+- Browse the list of available products.
+- Use the search bar to filter products.
 
 **Cart Page**
 
--View products added to your cart.
--Increase or decrease product quantity.
--Swipe left to remove a product from the cart.
+- View products added to your cart.
+- Increase or decrease product quantity.
+- Swipe left to remove a product from the cart.
 
 **Checkout Page**
 
--View the cart summary and subtotal.
--Proceed to checkout.
+- View the cart summary and subtotal.
+- Proceed to checkout.
 
 **Order Success Page**
 
-View the order success message.
-Navigate back to the home page.
+- View the order success message.
+- Navigate back to the home page.
