@@ -59,6 +59,7 @@ class MyApp extends StatelessWidget {
       create: (_) => ShoppingCart(),
       child: MaterialApp(
         title: 'Shopping App',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

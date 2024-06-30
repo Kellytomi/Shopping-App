@@ -144,8 +144,8 @@ class CheckoutPage extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue, // Background color
+                    foregroundColor: Colors.white, // Text color
                   ),
                   onPressed: () {
                     Navigator.push(

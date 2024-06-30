@@ -44,24 +44,20 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
 
     return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            color: Color(0xFF808080), // Changed to shade of grey
-            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: Text(
-                  _selectedIndex == 0 ? 'Products' : 'Cart',
-                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                ),
+      appBar: AppBar(
+        backgroundColor: Colors.blue, // Updated app bar color
+        title: _selectedIndex == 0
+            ? Text(
+                'Products',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
+              )
+            : Text(
+                'Cart',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
               ),
-            ),
-          ),
-          Expanded(child: _screens[_selectedIndex]),
-        ],
+        centerTitle: true,
       ),
+      body: _screens[_selectedIndex],
       bottomNavigationBar: Consumer<ShoppingCart>(
         builder: (context, cart, child) {
           return BottomNavigationBar(
@@ -91,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             '${cart.itemCount}',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 8,
+                              fontSize: 10, // Adjusted size to be readable but not too big
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,
