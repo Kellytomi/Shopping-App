@@ -5,6 +5,8 @@ import 'checkout_page.dart';
 import 'package:intl/intl.dart';
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -12,6 +14,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   String _searchQuery = '';
+  bool _showNotification = false;
   final List<Product> _products = [
     Product(name: 'Shirt', price: 25000.00), // Price in NGN
     Product(name: 'Pants', price: 30000.00), // Price in NGN
@@ -32,60 +35,90 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _showCartNotification() {
+    setState(() {
+      _showNotification = true;
+    });
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        _showNotification = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _screens = [
+    final List<Widget> screens = [
       ProductGrid(_filteredProducts, onSearch: (query) {
         setState(() {
           _searchQuery = query;
         });
-      }),
-      CheckoutPage(),
+      }, onProductAdded: _showCartNotification),
+      const CheckoutPage(),
     ];
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue, // Updated app bar color
         title: _selectedIndex == 0
-            ? Text(
+            ? const Text(
                 'Products',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
               )
-            : Text(
+            : const Text(
                 'Cart',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
               ),
         centerTitle: true,
       ),
-      body: _screens[_selectedIndex],
+      body: Stack(
+        children: [
+          screens[_selectedIndex],
+          if (_showNotification)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: Colors.green,
+                padding: const EdgeInsets.all(16.0),
+                child: const Text(
+                  'Cart successfully updated',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+        ],
+      ),
       bottomNavigationBar: Consumer<ShoppingCart>(
         builder: (context, cart, child) {
           return BottomNavigationBar(
             items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
+              const BottomNavigationBarItem(
                 icon: Icon(Icons.home),
                 label: 'Home',
               ),
               BottomNavigationBarItem(
                 icon: Stack(
                   children: <Widget>[
-                    Icon(Icons.shopping_cart),
+                    const Icon(Icons.shopping_cart),
                     if (cart.itemCount > 0)
                       Positioned(
                         right: 0,
                         child: Container(
-                          padding: EdgeInsets.all(1),
+                          padding: const EdgeInsets.all(1),
                           decoration: BoxDecoration(
                             color: Colors.red,
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          constraints: BoxConstraints(
+                          constraints: const BoxConstraints(
                             minWidth: 15,
                             minHeight: 14,
                           ),
                           child: Text(
                             '${cart.itemCount}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 10, // Adjusted size to be readable but not too big
                               fontWeight: FontWeight.bold,
@@ -112,8 +145,9 @@ class _MyHomePageState extends State<MyHomePage> {
 class ProductGrid extends StatelessWidget {
   final List<Product> products;
   final Function(String) onSearch;
+  final VoidCallback onProductAdded;
 
-  ProductGrid(this.products, {required this.onSearch});
+  const ProductGrid(this.products, {super.key, required this.onSearch, required this.onProductAdded});
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +159,7 @@ class ProductGrid extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: TextField(
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: 'Search Products',
               prefixIcon: Icon(Icons.search),
               border: OutlineInputBorder(
@@ -139,7 +173,7 @@ class ProductGrid extends StatelessWidget {
           child: GridView.builder(
             padding: const EdgeInsets.all(10.0),
             itemCount: products.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               childAspectRatio: 3 / 4,
               crossAxisSpacing: 10,
@@ -147,6 +181,10 @@ class ProductGrid extends StatelessWidget {
             ),
             itemBuilder: (ctx, index) {
               final product = products[index];
+              final productInCart = cart.items.firstWhere(
+                (item) => item.name == product.name,
+                orElse: () => Product(name: '', price: 0, quantity: 0),
+              );
               return GridTile(
                 child: Card(
                   elevation: 5,
@@ -158,7 +196,7 @@ class ProductGrid extends StatelessWidget {
                         height: 120,
                         width: double.infinity,
                         color: Colors.grey[200],
-                        child: Icon(Icons.image, size: 50, color: Colors.grey),
+                        child: const Icon(Icons.image, size: 50, color: Colors.grey),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -167,40 +205,55 @@ class ProductGrid extends StatelessWidget {
                           children: [
                             Text(
                               product.name,
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
-                            SizedBox(height: 5),
+                            const SizedBox(height: 5),
                             Text(
                               '₦${formatter.format(product.price)}',
-                              style: TextStyle(fontSize: 14, color: Colors.red),
+                              style: const TextStyle(fontSize: 14, color: Colors.red),
                             ),
                           ],
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.remove),
-                              onPressed: () => cart.removeProduct(product),
-                            ),
-                            Consumer<ShoppingCart>(
-                              builder: (context, cart, child) {
-                                final productInCart = cart.items.firstWhere(
-                                  (item) => item.name == product.name,
-                                  orElse: () => Product(name: '', price: 0, quantity: 0),
-                                );
-                                return Text(productInCart.quantity.toString());
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.add),
-                              onPressed: () => cart.addProduct(product),
-                            ),
-                          ],
+                        child: Center(
+                          child: productInCart.quantity == 0
+                              ? SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      cart.addProduct(product);
+                                      onProductAdded();
+                                    },
+                                    child: const Text('Add to Cart'),
+                                  ),
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.remove),
+                                      onPressed: () {
+                                        if (productInCart.quantity > 1) {
+                                          cart.removeProduct(product);
+                                        } else {
+                                          cart.removeProduct(product);
+                                          onProductAdded();
+                                        }
+                                      },
+                                    ),
+                                    Text(productInCart.quantity.toString()),
+                                    IconButton(
+                                      icon: const Icon(Icons.add),
+                                      onPressed: () {
+                                        cart.addProduct(product);
+                                        onProductAdded();
+                                      },
+                                    ),
+                                  ],
+                                ),
                         ),
                       ),
                     ],

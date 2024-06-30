@@ -26,7 +26,7 @@ class ShoppingCart extends ChangeNotifier {
   }
 
   void removeProduct(Product product) {
-    final index = _items.indexOf(product);
+    final index = _items.indexWhere((item) => item.name == product.name);
     if (index >= 0) {
       if (_items[index].quantity > 1) {
         _items[index].quantity--;
@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: MyHomePage(),
+        home: const MyHomePage(),
       ),
     );
   }

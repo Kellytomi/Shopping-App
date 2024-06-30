@@ -5,6 +5,8 @@ import '../main.dart'; // Import the main file to access ShoppingCart class
 import 'order_success.dart'; // Import the order success page
 
 class CheckoutPage extends StatelessWidget {
+  const CheckoutPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<ShoppingCart>(context);
@@ -15,18 +17,18 @@ class CheckoutPage extends StatelessWidget {
         children: [
           if (cart.items.isNotEmpty)
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               color: Colors.white,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('CART SUMMARY', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey[600])),
-                  SizedBox(height: 8),
+                  Text('CART SUMMARY', style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: Colors.black)),
+                  const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Subtotal', style: TextStyle(fontSize: 16)),
-                      Text('₦${formatter.format(cart.totalPrice)}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      const Text('Subtotal', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text('₦${formatter.format(cart.totalPrice)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ],
@@ -39,7 +41,7 @@ class CheckoutPage extends StatelessWidget {
                 children: [
                   Text(
                     'CART (${cart.itemCount})',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
                   ),
                 ],
               ),
@@ -47,7 +49,7 @@ class CheckoutPage extends StatelessWidget {
           Expanded(
             child: cart.items.isNotEmpty
                 ? ListView.builder(
-                    padding: EdgeInsets.only(top: 8.0),
+                    padding: const EdgeInsets.only(top: 8.0),
                     itemCount: cart.items.length,
                     itemBuilder: (context, index) {
                       final product = cart.items[index];
@@ -55,8 +57,7 @@ class CheckoutPage extends StatelessWidget {
                         key: Key(product.name),
                         direction: DismissDirection.endToStart,
                         onDismissed: (direction) {
-                          cart.items.removeAt(index);
-                          cart.notifyListeners();
+                          cart.removeProduct(product);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("${product.name} removed from cart")),
                           );
@@ -64,8 +65,8 @@ class CheckoutPage extends StatelessWidget {
                         background: Container(
                           color: Colors.red,
                           alignment: Alignment.centerRight,
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Icon(Icons.delete, color: Colors.white),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: const Icon(Icons.delete, color: Colors.white),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -79,31 +80,31 @@ class CheckoutPage extends StatelessWidget {
                                     width: 80,
                                     height: 80,
                                     color: Colors.grey[200],
-                                    child: Icon(Icons.image, size: 50, color: Colors.grey),
+                                    child: const Icon(Icons.image, size: 50, color: Colors.grey),
                                   ),
-                                  SizedBox(width: 10),
+                                  const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           product.name,
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                         ),
-                                        SizedBox(height: 5),
+                                        const SizedBox(height: 5),
                                         Text(
                                           'Seller: Brand name',
                                           style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                                         ),
-                                        SizedBox(height: 5),
+                                        const SizedBox(height: 5),
                                         Text(
                                           'Size/Color',
                                           style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                                         ),
-                                        SizedBox(height: 5),
+                                        const SizedBox(height: 5),
                                         Text(
                                           '₦${formatter.format(product.price)}',
-                                          style: TextStyle(fontSize: 14, color: Colors.red),
+                                          style: const TextStyle(fontSize: 14, color: Colors.red),
                                         ),
                                       ],
                                     ),
@@ -111,14 +112,14 @@ class CheckoutPage extends StatelessWidget {
                                   Column(
                                     children: [
                                       IconButton(
-                                        icon: Icon(Icons.add),
+                                        icon: const Icon(Icons.add),
                                         onPressed: () {
                                           cart.addProduct(product);
                                         },
                                       ),
                                       Text(product.quantity.toString()),
                                       IconButton(
-                                        icon: Icon(Icons.remove),
+                                        icon: const Icon(Icons.remove),
                                         onPressed: () {
                                           cart.removeProduct(product);
                                         },
@@ -133,7 +134,7 @@ class CheckoutPage extends StatelessWidget {
                       );
                     },
                   )
-                : Center(
+                : const Center(
                     child: Text('Your cart is empty.'),
                   ),
           ),
@@ -150,7 +151,7 @@ class CheckoutPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => OrderSuccessPage()),
+                      MaterialPageRoute(builder: (context) => const OrderSuccessPage()),
                     ).then((value) => cart.clearCart());
                   },
                   child: Text('Checkout (₦${formatter.format(cart.totalPrice)})'),
