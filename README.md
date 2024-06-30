@@ -12,6 +12,6 @@ A simple shopping application built with Flutter. This app allows users to brows
 
 ## Screenshots
 
-<img src="screenshot/Cart.png" alt="Home Page" width="300">
-<img src="screenshot/Cart.png" alt="Home Page" width="300">
-<img src="screenshot/Cart.png" alt="Home Page" width="300">
+<img src="screenshot/Products.png" alt="Home Page" width="300">
+<img src="screenshot/Cart.png" alt="Checkout" width="300">
+<img src="screenshot/Sucess.png" alt="Success" width="300">
