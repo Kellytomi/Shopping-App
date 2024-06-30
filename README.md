@@ -1,16 +1,15 @@
-# shopping_cart
+# Shopping App
 
-A new Flutter project.
+A simple shopping application built with Flutter. This app allows users to browse products, add them to a cart, and proceed to checkout. The app also includes an order success page after a successful checkout.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- Browse a list of products.
+- Add and remove products from the cart.
+- View the cart summary and subtotal.
+- Swipe to remove items from the cart.
+- Checkout and view an order success page.
 
-A few resources to get you started if this is your first Flutter project:
+- 
+## Screenshots
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
