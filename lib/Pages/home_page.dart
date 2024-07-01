@@ -217,12 +217,12 @@ class ProductGrid extends StatelessWidget {
                         color: Colors.grey[200],
                         child: const Icon(Icons.image, size: 50, color: Colors.grey),
                       ),
+                      Spacer(), // Add spacer to push name and price to the bottom
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 5), // Add some space between the image and text
                             Text(
                               product.name,
                               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -235,7 +235,6 @@ class ProductGrid extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const Spacer(),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                         child: productInCart.quantity == 0
