@@ -22,7 +22,7 @@ class CheckoutPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('CART SUMMARY', style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: Colors.black)),
+                  const Text('CART SUMMARY', style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: Colors.black)),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -145,7 +145,7 @@ class CheckoutPage extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, // Background color
+                    backgroundColor: Colors.orangeAccent, // Background color
                     foregroundColor: Colors.white, // Text color
                   ),
                   onPressed: () {
@@ -154,7 +154,7 @@ class CheckoutPage extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => const OrderSuccessPage()),
                     ).then((value) => cart.clearCart());
                   },
-                  child: Text('Checkout (₦${formatter.format(cart.totalPrice)})'),
+                  child: Text('Checkout (₦${formatter.format(cart.totalPrice)})', style: const TextStyle(fontWeight: FontWeight.bold),),
                 ),
               ),
             ),

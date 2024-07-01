@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _showNotification = true;
     });
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 1), () { // Reduced duration to 1 second
       setState(() {
         _showNotification = false;
       });
@@ -49,17 +49,22 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
-      ProductGrid(_filteredProducts, onSearch: (query) {
-        setState(() {
-          _searchQuery = query;
-        });
-      }, onProductAdded: _showCartNotification),
+      ProductGrid(
+        _filteredProducts,
+        onSearch: (query) {
+          setState(() {
+            _searchQuery = query;
+          });
+        },
+        onProductAdded: _showCartNotification,
+        onProductRemoved: _showCartNotification, // Added callback for product removal
+      ),
       const CheckoutPage(),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue, // Updated app bar color
+        backgroundColor: Colors.grey, // Updated app bar color
         title: _selectedIndex == 0
             ? const Text(
                 'Products',
@@ -146,8 +151,15 @@ class ProductGrid extends StatelessWidget {
   final List<Product> products;
   final Function(String) onSearch;
   final VoidCallback onProductAdded;
+  final VoidCallback onProductRemoved;
 
-  const ProductGrid(this.products, {super.key, required this.onSearch, required this.onProductAdded});
+  const ProductGrid(
+    this.products, {
+    super.key,
+    required this.onSearch,
+    required this.onProductAdded,
+    required this.onProductRemoved,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +239,10 @@ class ProductGrid extends StatelessWidget {
                                       cart.addProduct(product);
                                       onProductAdded();
                                     },
-                                    child: const Text('Add to Cart'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.orange, // Changed button color to orange
+                                    ),
+                                    child: const Text('Add to Cart', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                                   ),
                                 )
                               : Row(
@@ -240,8 +255,8 @@ class ProductGrid extends StatelessWidget {
                                           cart.removeProduct(product);
                                         } else {
                                           cart.removeProduct(product);
-                                          onProductAdded();
                                         }
+                                        onProductRemoved(); // Show notification on remove
                                       },
                                     ),
                                     Text(productInCart.quantity.toString()),
