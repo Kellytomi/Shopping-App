@@ -19,6 +19,13 @@ class _MyHomePageState extends State<MyHomePage> {
     Product(name: 'Shirt', price: 25000.00), // Price in NGN
     Product(name: 'Pants', price: 30000.00), // Price in NGN
     Product(name: 'Shoes', price: 52500.00), // Price in NGN
+    Product(name: 'Grocery', price: 15000.00), // Price in NGN
+    Product(name: 'Accessories', price: 7500.00), // Price in NGN
+    Product(name: 'Laptops', price: 150000.00), // Price in NGN
+    Product(name: 'MacBooks', price: 250000.00), // Price in NGN
+    Product(name: 'Drugs', price: 2000.00), // Price in NGN
+    Product(name: 'Pencils', price: 500.00), // Price in NGN
+    Product(name: 'Pens', price: 700.00), // Price in NGN
   ];
 
   List<Product> get _filteredProducts {
@@ -187,7 +194,7 @@ class ProductGrid extends StatelessWidget {
             itemCount: products.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 3 / 4,
+              childAspectRatio: 2 / 3, // Adjust the aspect ratio to fit better
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
             ),
@@ -205,16 +212,17 @@ class ProductGrid extends StatelessWidget {
                     children: [
                       // Placeholder for product image
                       Container(
-                        height: 120,
+                        height: 150, // Adjusted height to bring it closer to the text
                         width: double.infinity,
                         color: Colors.grey[200],
                         child: const Icon(Icons.image, size: 50, color: Colors.grey),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            const SizedBox(height: 5), // Add some space between the image and text
                             Text(
                               product.name,
                               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -229,47 +237,45 @@ class ProductGrid extends StatelessWidget {
                       ),
                       const Spacer(),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                          child: productInCart.quantity == 0
-                              ? SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: productInCart.quantity == 0
+                            ? SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    cart.addProduct(product);
+                                    onProductAdded();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.orange, // Changed button color to orange
+                                  ),
+                                  child: const Text('Add to Cart', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.remove),
+                                    onPressed: () {
+                                      if (productInCart.quantity > 1) {
+                                        cart.removeProduct(product);
+                                      } else {
+                                        cart.removeProduct(product);
+                                      }
+                                      onProductRemoved(); // Show notification on remove
+                                    },
+                                  ),
+                                  Text(productInCart.quantity.toString()),
+                                  IconButton(
+                                    icon: const Icon(Icons.add),
                                     onPressed: () {
                                       cart.addProduct(product);
                                       onProductAdded();
                                     },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.orange, // Changed button color to orange
-                                    ),
-                                    child: const Text('Add to Cart', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                                   ),
-                                )
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.remove),
-                                      onPressed: () {
-                                        if (productInCart.quantity > 1) {
-                                          cart.removeProduct(product);
-                                        } else {
-                                          cart.removeProduct(product);
-                                        }
-                                        onProductRemoved(); // Show notification on remove
-                                      },
-                                    ),
-                                    Text(productInCart.quantity.toString()),
-                                    IconButton(
-                                      icon: const Icon(Icons.add),
-                                      onPressed: () {
-                                        cart.addProduct(product);
-                                        onProductAdded();
-                                      },
-                                    ),
-                                  ],
-                                ),
-                        ),
+                                ],
+                              ),
                       ),
                     ],
                   ),
