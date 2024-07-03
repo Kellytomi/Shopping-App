@@ -86,7 +86,7 @@ class OrderSuccessPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => MyHomePage()),
+                    MaterialPageRoute(builder: (context) => const MyHomePage()),
                     (Route<dynamic> route) => false,
                   );
                 },

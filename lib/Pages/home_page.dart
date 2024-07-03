@@ -217,7 +217,7 @@ class ProductGrid extends StatelessWidget {
                         color: Colors.grey[200],
                         child: const Icon(Icons.image, size: 50, color: Colors.grey),
                       ),
-                      Spacer(), // Add spacer to push name and price to the bottom
+                      const Spacer(), // Add spacer to push name and price to the bottom
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Column(
