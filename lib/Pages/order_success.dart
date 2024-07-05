@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:shopping_cart/shopping_cart.dart';
 import '../main.dart'; // Import to access ShoppingCart class
 import 'home_page.dart'; // Import to access MyHomePage
 

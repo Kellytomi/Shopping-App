@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../main.dart'; // Import the main file to access ShoppingCart class
+import '../product.dart'; // Import the Product model
+import '../shopping_cart.dart'; // Import the ShoppingCart class
 import 'order_success.dart'; // Import the order success page
 
 class CheckoutPage extends StatelessWidget {
@@ -54,7 +55,7 @@ class CheckoutPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final product = cart.items[index];
                       return Dismissible(
-                        key: Key(product.name),
+                        key: Key(product.id),
                         direction: DismissDirection.endToStart,
                         onDismissed: (direction) {
                           cart.removeProduct(product);
@@ -80,7 +81,11 @@ class CheckoutPage extends StatelessWidget {
                                     width: 80,
                                     height: 80,
                                     color: Colors.grey[200],
-                                    child: const Icon(Icons.image, size: 50, color: Colors.grey),
+                                    child: Image.network(
+                                      product.imageUrl,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 50, color: Colors.grey),
+                                    ),
                                   ),
                                   const SizedBox(width: 10),
                                   Expanded(

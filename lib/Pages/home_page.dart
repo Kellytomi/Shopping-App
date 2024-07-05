@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../main.dart'; // Import the main file to access Product and ShoppingCart classes
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../api_service.dart';
+import '../product.dart';
+import '../shopping_cart.dart';
 import 'checkout_page.dart';
 import 'package:intl/intl.dart';
 
@@ -15,24 +18,24 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   String _searchQuery = '';
   bool _showNotification = false;
-  final List<Product> _products = [
-    Product(name: 'Shirt', price: 25000.00), // Price in NGN
-    Product(name: 'Pants', price: 30000.00), // Price in NGN
-    Product(name: 'Shoes', price: 52500.00), // Price in NGN
-    Product(name: 'Grocery', price: 15000.00), // Price in NGN
-    Product(name: 'Accessories', price: 7500.00), // Price in NGN
-    Product(name: 'Laptops', price: 150000.00), // Price in NGN
-    Product(name: 'MacBooks', price: 250000.00), // Price in NGN
-    Product(name: 'Drugs', price: 2000.00), // Price in NGN
-    Product(name: 'Pencils', price: 500.00), // Price in NGN
-    Product(name: 'Pens', price: 700.00), // Price in NGN
-  ];
+  late Future<List<Product>> _productsFuture;
+  final ApiService _apiService = ApiService();
 
-  List<Product> get _filteredProducts {
+  final String organizationId = '209125aceafd409da63981e3f490cc86'; // Replace with your actual organization ID when you find it
+  final String appId = 'XFK83THSULFBKRJ'; // Replace with your actual APP ID
+  final String apiKey = '119e6f592d1f45738b941e0b7c85ff2420240705093646438302'; // Replace with your actual API Key
+
+  @override
+  void initState() {
+    super.initState();
+    _productsFuture = _apiService.fetchProducts(organizationId, appId, apiKey);
+  }
+
+  List<Product> _filterProducts(List<Product> products) {
     if (_searchQuery.isEmpty) {
-      return _products;
+      return products;
     } else {
-      return _products.where((product) => product.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+      return products.where((product) => product.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
     }
   }
 
@@ -46,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _showNotification = true;
     });
-    Future.delayed(const Duration(seconds: 1), () { // Reduced duration to 1 second
+    Future.delayed(const Duration(seconds: 1), () {
       setState(() {
         _showNotification = false;
       });
@@ -56,22 +59,41 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
-      ProductGrid(
-        _filteredProducts,
-        onSearch: (query) {
-          setState(() {
-            _searchQuery = query;
-          });
+      FutureBuilder<List<Product>>(
+        future: _productsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: SpinKitCircle(
+                color: Colors.blue,
+                size: 50.0,
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else {
+            final products = _filterProducts(snapshot.data ?? []);
+            return ProductGrid(
+              products,
+              onSearch: (query) {
+                setState(() {
+                  _searchQuery = query;
+                });
+              },
+              onProductAdded: _showCartNotification,
+              onProductRemoved: _showCartNotification, // Added callback for product removal
+            );
+          }
         },
-        onProductAdded: _showCartNotification,
-        onProductRemoved: _showCartNotification, // Added callback for product removal
       ),
       const CheckoutPage(),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey, // Updated app bar color
+        backgroundColor: Colors.grey,
         title: _selectedIndex == 0
             ? const Text(
                 'Products',
@@ -132,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             '${cart.itemCount}',
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 10, // Adjusted size to be readable but not too big
+                              fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,
@@ -153,7 +175,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-// Product Grid with quantity control and search functionality
 class ProductGrid extends StatelessWidget {
   final List<Product> products;
   final Function(String) onSearch;
@@ -194,15 +215,15 @@ class ProductGrid extends StatelessWidget {
             itemCount: products.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 2 / 3, // Adjust the aspect ratio to fit better
+              childAspectRatio: 2 / 3,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
             ),
             itemBuilder: (ctx, index) {
               final product = products[index];
               final productInCart = cart.items.firstWhere(
-                (item) => item.name == product.name,
-                orElse: () => Product(name: '', price: 0, quantity: 0),
+                (item) => item.id == product.id,
+                orElse: () => Product(id: '', name: '', imageUrl: '', price: 0),
               );
               return GridTile(
                 child: Card(
@@ -210,14 +231,17 @@ class ProductGrid extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Placeholder for product image
+                      // Display product image
                       Container(
-                        height: 150, // Adjusted height to bring it closer to the text
+                        height: 150,
                         width: double.infinity,
-                        color: Colors.grey[200],
-                        child: const Icon(Icons.image, size: 50, color: Colors.grey),
+                        child: Image.network(
+                          product.imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 50, color: Colors.grey),
+                        ),
                       ),
-                      const Spacer(), // Add spacer to push name and price to the bottom
+                      const Spacer(),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Column(
@@ -246,7 +270,7 @@ class ProductGrid extends StatelessWidget {
                                     onProductAdded();
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.orange, // Changed button color to orange
+                                    backgroundColor: Colors.orange,
                                   ),
                                   child: const Text('Add to Cart', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                                 ),
@@ -257,12 +281,8 @@ class ProductGrid extends StatelessWidget {
                                   IconButton(
                                     icon: const Icon(Icons.remove),
                                     onPressed: () {
-                                      if (productInCart.quantity > 1) {
-                                        cart.removeProduct(product);
-                                      } else {
-                                        cart.removeProduct(product);
-                                      }
-                                      onProductRemoved(); // Show notification on remove
+                                      cart.removeProduct(product);
+                                      onProductRemoved();
                                     },
                                   ),
                                   Text(productInCart.quantity.toString()),
