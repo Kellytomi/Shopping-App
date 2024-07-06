@@ -82,7 +82,7 @@ class CheckoutPage extends StatelessWidget {
                                     height: 80,
                                     color: Colors.grey[200],
                                     child: Image.network(
-                                      product.imageUrl,
+                                      product.imageUrls[0],
                                       fit: BoxFit.cover,
                                       errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 50, color: Colors.grey),
                                     ),

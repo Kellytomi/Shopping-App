@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_cart/error_widget.dart';
+import 'package:badges/badges.dart' as badges;
 import '../api_service.dart';
 import '../product.dart';
 import '../shopping_cart.dart';
@@ -148,31 +149,19 @@ class _MyHomePageState extends State<MyHomePage> {
               BottomNavigationBarItem(
                 icon: Stack(
                   children: <Widget>[
-                    const Icon(Icons.shopping_cart),
-                    if (cart.itemCount > 0)
-                      Positioned(
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(1),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 15,
-                            minHeight: 14,
-                          ),
-                          child: Text(
-                            '${cart.itemCount}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
+                    badges.Badge(
+                      badgeContent: Text(
+                        '${cart.itemCount}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
                         ),
-                      )
+                        textAlign: TextAlign.center,
+                      ),
+                      child: const Icon(Icons.shopping_cart),
+                      showBadge: cart.itemCount > 0,
+                    ),
                   ],
                 ),
                 label: 'Checkout',
@@ -189,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class ProductGrid extends StatelessWidget {
+class ProductGrid extends StatefulWidget {
   final List<Product> products;
   final Function(String) onSearch;
   final VoidCallback onProductAdded;
@@ -202,6 +191,19 @@ class ProductGrid extends StatelessWidget {
     required this.onProductAdded,
     required this.onProductRemoved,
   });
+
+  @override
+  _ProductGridState createState() => _ProductGridState();
+}
+
+class _ProductGridState extends State<ProductGrid> {
+  final Map<String, bool> _showQuantityButtons = {};
+
+  void _toggleQuantityButtons(String productId) {
+    setState(() {
+      _showQuantityButtons[productId] = !(_showQuantityButtons[productId] ?? false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -220,13 +222,13 @@ class ProductGrid extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
               ),
             ),
-            onChanged: onSearch,
+            onChanged: widget.onSearch,
           ),
         ),
         Expanded(
           child: GridView.builder(
             padding: const EdgeInsets.all(10.0),
-            itemCount: products.length,
+            itemCount: widget.products.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               childAspectRatio: 2 / 3,
@@ -234,11 +236,13 @@ class ProductGrid extends StatelessWidget {
               mainAxisSpacing: 10,
             ),
             itemBuilder: (ctx, index) {
-              final product = products[index];
+              final product = widget.products[index];
               final productInCart = cart.items.firstWhere(
                 (item) => item.id == product.id,
-                orElse: () => Product(id: '', name: '', imageUrl: '', price: 0, availableQuantity: 0, description: ''),
+                orElse: () => Product(id: '', name: '', imageUrls: [], price: 0, availableQuantity: 0, description: ''),
               );
+              final isInCart = _showQuantityButtons[product.id] ?? false;
+
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -251,16 +255,15 @@ class ProductGrid extends StatelessWidget {
                 child: GridTile(
                   child: Card(
                     elevation: 5,
-                    color: Colors.white, // Set the card color to white
+                    color: Colors.white,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Display product image
                         SizedBox(
                           height: 150,
                           width: double.infinity,
                           child: Image.network(
-                            product.imageUrl,
+                            product.imageUrls.isNotEmpty ? product.imageUrls[0] : '',
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 50, color: Colors.grey),
                           ),
@@ -285,28 +288,23 @@ class ProductGrid extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                          child: productInCart.quantity == 0
-                              ? SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      cart.addProduct(product);
-                                      onProductAdded();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.orange,
-                                    ),
-                                    child: const Text('Add to Cart', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                                  ),
-                                )
-                              : Row(
+                          child: Column(
+                            children: [
+                              if (isInCart)
+                                Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     IconButton(
                                       icon: const Icon(Icons.remove),
                                       onPressed: () {
-                                        cart.removeProduct(product);
-                                        onProductRemoved();
+                                        if (productInCart.quantity > 1) {
+                                          cart.removeProduct(product);
+                                          widget.onProductRemoved();
+                                        } else {
+                                          cart.removeProduct(product);
+                                          widget.onProductRemoved();
+                                          _toggleQuantityButtons(product.id);
+                                        }
                                       },
                                     ),
                                     Text(productInCart.quantity.toString()),
@@ -315,7 +313,7 @@ class ProductGrid extends StatelessWidget {
                                       onPressed: () {
                                         if (productInCart.quantity < product.availableQuantity) {
                                           cart.addProduct(product);
-                                          onProductAdded();
+                                          widget.onProductAdded();
                                         } else {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
@@ -327,7 +325,24 @@ class ProductGrid extends StatelessWidget {
                                       },
                                     ),
                                   ],
+                                )
+                              else
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      cart.addProduct(product);
+                                      widget.onProductAdded();
+                                      _toggleQuantityButtons(product.id);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.orange,
+                                    ),
+                                    child: const Text('Add to Cart', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                                  ),
                                 ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

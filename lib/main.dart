@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'Pages/home_page.dart';
 import 'Pages/splash_screen.dart'; // Import the splash screen
-import 'product.dart';
 import 'shopping_cart.dart';
-import 'api_service.dart';
 
 // Main App Widget
 class MyApp extends StatelessWidget {

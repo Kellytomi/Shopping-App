@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import '../product.dart';
 
 class ProductInfoPage extends StatelessWidget {
@@ -26,15 +27,27 @@ class ProductInfoPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Enlarged product image
-              SizedBox(
-                height: 300,
-                width: double.infinity,
-                child: Image.network(
-                  product.imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 100, color: Colors.grey),
+              // Carousel for product images
+              CarouselSlider(
+                options: CarouselOptions(
+                  height: 300,
+                  autoPlay: false,
+                  enlargeCenterPage: true,
                 ),
+                items: product.imageUrls.map((imageUrl) {
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Image.network(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 100, color: Colors.grey),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 16),
               Padding(
