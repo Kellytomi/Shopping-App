@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'Pages/home_page.dart';
+import 'Pages/splash_screen.dart'; // Import the splash screen
 import 'product.dart';
 import 'shopping_cart.dart';
 import 'api_service.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const MyHomePage(),
+        home: const SplashScreen(), // Set the splash screen as the initial route
       ),
     );
   }

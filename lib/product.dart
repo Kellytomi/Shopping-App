@@ -5,6 +5,7 @@ class Product {
   final double price;
   int quantity;
   final int availableQuantity;
+  final String description; // Add description field
 
   Product({
     required this.id,
@@ -13,6 +14,7 @@ class Product {
     required this.price,
     this.quantity = 1,
     required this.availableQuantity,
+    required this.description, // Add description to constructor
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class Product {
           ? json['current_price'][0]['NGN'][0].toDouble()
           : 0.0,
       availableQuantity: json['available_quantity'] ?? 0,
+      description: json['description'] ?? '', // Parse description from JSON
     );
   }
 }

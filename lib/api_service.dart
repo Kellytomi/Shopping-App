@@ -26,4 +26,18 @@ class ApiService {
       throw Exception('Failed to load products');
     }
   }
+
+  Future<Product?> fetchProductById(String productId) async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl/$productId'),
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+      if (jsonResponse.isNotEmpty) {
+        return Product.fromJson(jsonResponse);
+      }
+    }
+    return null;
+  }
 }
