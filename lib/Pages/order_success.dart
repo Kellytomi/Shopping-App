@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:shopping_cart/shopping_cart.dart';
-import '../main.dart'; // Import to access ShoppingCart class
-import 'home_page.dart'; // Import to access MyHomePage
+import '../main.dart';
+import 'home_page.dart';
 
 class OrderSuccessPage extends StatelessWidget {
   const OrderSuccessPage({super.key});
@@ -19,7 +19,7 @@ class OrderSuccessPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 50), // Adjusted top padding
+            const SizedBox(height: 50),
             const Icon(
               Icons.check_circle,
               color: Colors.blue,
@@ -54,7 +54,11 @@ class OrderSuccessPage extends StatelessWidget {
                         width: 50,
                         height: 50,
                         color: Colors.grey[200],
-                        child: const Icon(Icons.image, size: 30, color: Colors.grey),
+                        child: Image.network(
+                          product.imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 30, color: Colors.grey),
+                        ),
                       ),
                       title: Text(product.name),
                       subtitle: Text(
@@ -80,7 +84,7 @@ class OrderSuccessPage extends StatelessWidget {
               '₦${formatter.format(cart.totalPrice)}',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
             ),
-            const SizedBox(height: 40), // Increased the height here to bring up the elements
+            const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -92,14 +96,14 @@ class OrderSuccessPage extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue, // Background color
-                  foregroundColor: Colors.white, // Text color
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
                 child: const Text('Back to home'),
               ),
             ),
-            const SizedBox(height: 20), // Added bottom padding to move the button up a bit
+            const SizedBox(height: 20),
           ],
         ),
       ),

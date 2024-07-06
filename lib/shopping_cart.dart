@@ -7,7 +7,9 @@ class ShoppingCart extends ChangeNotifier {
   void addProduct(Product product) {
     final existingIndex = _items.indexWhere((item) => item.id == product.id);
     if (existingIndex >= 0) {
-      _items[existingIndex].quantity++;
+      if (_items[existingIndex].quantity < product.availableQuantity) {
+        _items[existingIndex].quantity++;
+      }
     } else {
       _items.add(product);
     }

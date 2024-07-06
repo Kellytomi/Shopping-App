@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart'; // Add this import
 import 'package:provider/provider.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:shopping_cart/error_widget.dart';
 import '../api_service.dart';
 import '../product.dart';
 import '../shopping_cart.dart';
@@ -21,14 +22,20 @@ class _MyHomePageState extends State<MyHomePage> {
   late Future<List<Product>> _productsFuture;
   final ApiService _apiService = ApiService();
 
-  final String organizationId = '209125aceafd409da63981e3f490cc86'; // Replace with your actual organization ID when you find it
-  final String appId = 'XFK83THSULFBKRJ'; // Replace with your actual APP ID
-  final String apiKey = '119e6f592d1f45738b941e0b7c85ff2420240705093646438302'; // Replace with your actual API Key
+  final String organizationId = '209125aceafd409da63981e3f490cc86';
+  final String appId = 'XFK83THSULFBKRJ';
+  final String apiKey = '119e6f592d1f45738b941e0b7c85ff2420240705093646438302';
 
   @override
   void initState() {
     super.initState();
     _productsFuture = _apiService.fetchProducts(organizationId, appId, apiKey);
+  }
+
+  Future<void> _refreshProducts() async {
+    setState(() {
+      _productsFuture = _apiService.fetchProducts(organizationId, appId, apiKey);
+    });
   }
 
   List<Product> _filterProducts(List<Product> products) {
@@ -59,41 +66,45 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
-      FutureBuilder<List<Product>>(
-        future: _productsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: SpinKitCircle(
-                color: Colors.blue,
-                size: 50.0,
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          } else {
-            final products = _filterProducts(snapshot.data ?? []);
-            return ProductGrid(
-              products,
-              onSearch: (query) {
-                setState(() {
-                  _searchQuery = query;
-                });
-              },
-              onProductAdded: _showCartNotification,
-              onProductRemoved: _showCartNotification, // Added callback for product removal
-            );
-          }
-        },
+      RefreshIndicator(
+        onRefresh: _refreshProducts,
+        child: FutureBuilder<List<Product>>(
+          future: _productsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CupertinoActivityIndicator(
+                  radius: 20.0,
+                  color: Colors.orange, // Set the color to orange
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return ErrorWidgetCustom(
+                message: 'Slow or no internet connections. Please check your internet settings',
+                onRetry: _refreshProducts,
+              );
+            } else {
+              final products = _filterProducts(snapshot.data ?? []);
+              return ProductGrid(
+                products: products,
+                onSearch: (query) {
+                  setState(() {
+                    _searchQuery = query;
+                  });
+                },
+                onProductAdded: _showCartNotification,
+                onProductRemoved: _showCartNotification,
+              );
+            }
+          },
+        ),
       ),
       const CheckoutPage(),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.orangeAccent,
         title: _selectedIndex == 0
             ? const Text(
                 'Products',
@@ -181,9 +192,9 @@ class ProductGrid extends StatelessWidget {
   final VoidCallback onProductAdded;
   final VoidCallback onProductRemoved;
 
-  const ProductGrid(
-    this.products, {
+  const ProductGrid({
     super.key,
+    required this.products,
     required this.onSearch,
     required this.onProductAdded,
     required this.onProductRemoved,
@@ -223,7 +234,7 @@ class ProductGrid extends StatelessWidget {
               final product = products[index];
               final productInCart = cart.items.firstWhere(
                 (item) => item.id == product.id,
-                orElse: () => Product(id: '', name: '', imageUrl: '', price: 0),
+                orElse: () => Product(id: '', name: '', imageUrl: '', price: 0, availableQuantity: 0),
               );
               return GridTile(
                 child: Card(
@@ -232,7 +243,7 @@ class ProductGrid extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Display product image
-                      Container(
+                      SizedBox(
                         height: 150,
                         width: double.infinity,
                         child: Image.network(
@@ -289,8 +300,17 @@ class ProductGrid extends StatelessWidget {
                                   IconButton(
                                     icon: const Icon(Icons.add),
                                     onPressed: () {
-                                      cart.addProduct(product);
-                                      onProductAdded();
+                                      if (productInCart.quantity < product.availableQuantity) {
+                                        cart.addProduct(product);
+                                        onProductAdded();
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text("Out of Stock"),
+                                            duration: Duration(seconds: 1),
+                                          ),
+                                        );
+                                      }
                                     },
                                   ),
                                 ],
