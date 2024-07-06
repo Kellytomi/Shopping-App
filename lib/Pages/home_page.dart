@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart'; // Add this import
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:shopping_cart/error_widget.dart';
 import '../api_service.dart';
@@ -178,6 +178,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
             currentIndex: _selectedIndex,
+            selectedItemColor: Colors.orange, // Set the selected item color to orange
+            unselectedItemColor: Colors.grey, // Set the unselected item color to grey
             onTap: _onItemTapped,
           );
         },
