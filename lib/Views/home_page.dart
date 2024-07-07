@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_cart/error_widget.dart';
+import 'package:shopping_cart/Views/Widgets/error_widget.dart';
 import 'package:badges/badges.dart' as badges;
-import '../api_service.dart';
-import '../product.dart';
-import '../shopping_cart.dart';
+import '../Services/api_service.dart';
+import '../Models/product.dart';
+import '../Provider/shopping_cart.dart';
 import 'checkout_page.dart';
-import 'package:shopping_cart/product_info_page.dart';
+import 'package:shopping_cart/Views/product_info_page.dart';
 import 'package:intl/intl.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -249,7 +249,6 @@ class _ProductGridState extends State<ProductGrid> {
                 (item) => item.id == product.id,
                 orElse: () => Product(id: '', name: '', imageUrls: [], price: 0, availableQuantity: 0, description: ''),
               );
-              final isInCart = _showQuantityButtons[product.id] ?? false;
 
               return GestureDetector(
                 onTap: () {
@@ -291,11 +290,15 @@ class _ProductGridState extends State<ProductGrid> {
                               Text(
                                 product.name,
                                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 10),
                               Text(
                                 '₦${formatter.format(product.price)}',
                                 style: const TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),

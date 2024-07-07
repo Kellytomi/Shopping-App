@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../shopping_cart.dart'; // Import the ShoppingCart class
+import '../Provider/shopping_cart.dart'; // Import the ShoppingCart class
 import 'order_success.dart'; // Import the order success page
 
 class CheckoutPage extends StatelessWidget {

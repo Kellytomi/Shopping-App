@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import '../product.dart';
+import '../Models/product.dart';
 import 'package:provider/provider.dart';
-import '../shopping_cart.dart';
+import '../Provider/shopping_cart.dart';
 
 class ProductInfoPage extends StatefulWidget {
   final Product product;
