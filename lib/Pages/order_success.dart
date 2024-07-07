@@ -22,13 +22,8 @@ class OrderSuccessPage extends StatelessWidget {
             const SizedBox(height: 50),
             const Icon(
               Icons.check_circle,
-              color: Colors.blue,
+              color: Colors.orange,
               size: 100,
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Great!',
-              style: TextStyle(fontSize: 24, color: Colors.blue),
             ),
             const SizedBox(height: 10),
             const Text(
@@ -75,20 +70,21 @@ class OrderSuccessPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Text(
+            const Text(
               'Total Order',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 16, color: Colors.black),
             ),
             const SizedBox(height: 5),
             Text(
               '₦${formatter.format(cart.totalPrice)}',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
             ),
             const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
+                  cart.clearCart(); // Clear the cart before navigating back
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => const MyHomePage()),
@@ -96,7 +92,7 @@ class OrderSuccessPage extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Colors.orangeAccent,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),

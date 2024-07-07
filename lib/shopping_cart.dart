@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'product.dart';
 
 class ShoppingCart extends ChangeNotifier {
-  final List<Product> _items = [];
+  List<Product> _items = [];
+
+  List<Product> get items => _items;
+
+  double get totalPrice => _items.fold(0, (total, current) => total + current.price * current.quantity);
+
+  int get itemCount => _items.fold(0, (total, current) => total + current.quantity);
 
   void addProduct(Product product) {
-    final existingIndex = _items.indexWhere((item) => item.id == product.id);
-    if (existingIndex >= 0) {
-      if (_items[existingIndex].quantity < product.availableQuantity) {
-        _items[existingIndex].quantity++;
-      }
+    final index = _items.indexWhere((item) => item.id == product.id);
+    if (index >= 0) {
+      _items[index].quantity++;
     } else {
-      _items.add(product);
+      _items.add(product..quantity = 1);
     }
     notifyListeners();
   }
@@ -24,15 +28,14 @@ class ShoppingCart extends ChangeNotifier {
       } else {
         _items.removeAt(index);
       }
-      notifyListeners();
     }
+    notifyListeners();
   }
 
-  List<Product> get items => _items;
-
-  double get totalPrice => _items.fold(0.0, (sum, product) => sum + product.price * product.quantity);
-
-  int get itemCount => _items.fold(0, (sum, product) => sum + product.quantity);
+  void removeAllOfProduct(Product product) {
+    _items.removeWhere((item) => item.id == product.id);
+    notifyListeners();
+  }
 
   void clearCart() {
     _items.clear();

@@ -18,7 +18,12 @@ class ApiService {
       print('JSON Response: $jsonResponse');
       if (jsonResponse.containsKey('items') && jsonResponse['items'] != null) {
         List<dynamic> items = jsonResponse['items'];
-        return items.map((item) => Product.fromJson(item)).toList();
+        try {
+          return items.map((item) => Product.fromJson(item)).toList();
+        } catch (e) {
+          print('Error parsing products: $e');
+          throw Exception('Error parsing products');
+        }
       } else {
         throw Exception('No data found');
       }
@@ -39,5 +44,21 @@ class ApiService {
       }
     }
     return null;
+  }
+
+  Future<void> updateProductQuantity(String productId, int newQuantity, String appId, String apiKey) async {
+    final response = await http.patch(
+      Uri.parse('$_baseUrl/$productId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Appid': appId,
+        'Apikey': apiKey,
+      },
+      body: json.encode({'available_quantity': newQuantity}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update product quantity');
+    }
   }
 }

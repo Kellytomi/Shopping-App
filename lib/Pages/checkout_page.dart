@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../product.dart'; // Import the Product model
 import '../shopping_cart.dart'; // Import the ShoppingCart class
 import 'order_success.dart'; // Import the order success page
 
@@ -58,9 +57,12 @@ class CheckoutPage extends StatelessWidget {
                         key: Key(product.id),
                         direction: DismissDirection.endToStart,
                         onDismissed: (direction) {
-                          cart.removeProduct(product);
+                          cart.removeAllOfProduct(product); // Remove all quantities of the product
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("${product.name} removed from cart")),
+                            SnackBar(
+                              content: Text("${product.name} removed from cart"),
+                              duration: const Duration(seconds: 1),
+                            ),
                           );
                         },
                         background: Container(
@@ -153,13 +155,15 @@ class CheckoutPage extends StatelessWidget {
                     backgroundColor: Colors.orangeAccent, // Background color
                     foregroundColor: Colors.white, // Text color
                   ),
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const OrderSuccessPage()),
-                    ).then((value) => cart.clearCart());
+                    );
+                    cart.clearCart(); // Clear the cart after navigating back from the OrderSuccessPage
+                    Provider.of<ShoppingCart>(context, listen: false).clearCart(); // Clear the cart after navigating back from the OrderSuccessPage
                   },
-                  child: Text('Checkout (₦${formatter.format(cart.totalPrice)})', style: const TextStyle(fontWeight: FontWeight.bold),),
+                  child: Text('Checkout (₦${formatter.format(cart.totalPrice)})', style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
             ),

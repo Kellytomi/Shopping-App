@@ -40,6 +40,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _refreshProducts();
+  }
+
   List<Product> _filterProducts(List<Product> products) {
     if (_searchQuery.isEmpty) {
       return products;
@@ -81,14 +87,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               );
             } else if (snapshot.hasError) {
-              print('Error: ${snapshot.error}');
               return ErrorWidgetCustom(
                 message: 'Slow or no internet connections. Please check your internet settings',
                 onRetry: _refreshProducts,
               );
             } else {
               final products = _filterProducts(snapshot.data ?? []);
-              print('Products: ${products.length}');
               return ProductGrid(
                 products: products,
                 onSearch: (query) {
@@ -108,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Colors.grey,
         title: _selectedIndex == 0
             ? const Text(
                 'Products',
@@ -161,8 +165,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      child: const Icon(Icons.shopping_cart),
                       showBadge: cart.itemCount > 0,
+                      child: const Icon(Icons.shopping_cart),
                     ),
                   ],
                 ),
@@ -220,6 +224,8 @@ class _ProductGridState extends State<ProductGrid> {
             decoration: const InputDecoration(
               hintText: 'Search Products',
               prefixIcon: Icon(Icons.search),
+              filled: true,
+              fillColor: Colors.white,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
               ),
@@ -258,16 +264,22 @@ class _ProductGridState extends State<ProductGrid> {
                   child: Card(
                     elevation: 5,
                     color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          height: 150,
-                          width: double.infinity,
-                          child: Image.network(
-                            product.imageUrls.isNotEmpty ? product.imageUrls[0] : '',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 50, color: Colors.grey),
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(15.0)),
+                          child: SizedBox(
+                            height: 150,
+                            width: double.infinity,
+                            child: Image.network(
+                              product.imageUrls.isNotEmpty ? product.imageUrls[0] : '',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 50, color: Colors.grey),
+                            ),
                           ),
                         ),
                         const Spacer(),
@@ -280,19 +292,19 @@ class _ProductGridState extends State<ProductGrid> {
                                 product.name,
                                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
                               ),
-                              const SizedBox(height: 5),
+                              const SizedBox(height: 10),
                               Text(
                                 '₦${formatter.format(product.price)}',
-                                style: const TextStyle(fontSize: 14, color: Colors.black, fontWeight: FontWeight.bold),
+                                style: const TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                           child: Column(
                             children: [
-                              if (isInCart)
+                              if (cart.items.any((item) => item.id == product.id))
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -332,15 +344,20 @@ class _ProductGridState extends State<ProductGrid> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: ElevatedButton(
-                                    onPressed: () {
-                                      cart.addProduct(product);
-                                      widget.onProductAdded();
-                                      _toggleQuantityButtons(product.id);
-                                    },
+                                    onPressed: product.availableQuantity > 0
+                                        ? () {
+                                            cart.addProduct(product);
+                                            widget.onProductAdded();
+                                            _toggleQuantityButtons(product.id);
+                                          }
+                                        : null,
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.orange,
+                                      backgroundColor: product.availableQuantity > 0 ? Colors.orange : Colors.grey,
                                     ),
-                                    child: const Text('Add to Cart', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                                    child: Text(
+                                      product.availableQuantity > 0 ? 'Add to Cart' : 'Out of Stock',
+                                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                                    ),
                                   ),
                                 ),
                             ],
