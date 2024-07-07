@@ -81,12 +81,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               );
             } else if (snapshot.hasError) {
+              print('Error: ${snapshot.error}');
               return ErrorWidgetCustom(
                 message: 'Slow or no internet connections. Please check your internet settings',
                 onRetry: _refreshProducts,
               );
             } else {
               final products = _filterProducts(snapshot.data ?? []);
+              print('Products: ${products.length}');
               return ProductGrid(
                 products: products,
                 onSearch: (query) {

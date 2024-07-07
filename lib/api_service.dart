@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'product.dart'; // Import the Product model
+import 'product.dart';
 
 class ApiService {
-  final String _baseUrl = 'https://api.timbu.cloud/products'; // Base URL for the API
+  final String _baseUrl = 'https://api.timbu.cloud/products';
 
   Future<List<Product>> fetchProducts(String organizationId, String appId, String apiKey, {int page = 1, int size = 10, bool reverseSort = false}) async {
     final response = await http.get(

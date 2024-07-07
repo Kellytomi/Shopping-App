@@ -1,7 +1,7 @@
 class Product {
   final String id;
   final String name;
-  final List<String> imageUrls; // Change this to a list of URLs
+  final List<String> imageUrls;
   final double price;
   int quantity;
   final int availableQuantity;
@@ -10,7 +10,7 @@ class Product {
   Product({
     required this.id,
     required this.name,
-    required this.imageUrls, // Change constructor parameter
+    required this.imageUrls,
     required this.price,
     this.quantity = 1,
     required this.availableQuantity,
@@ -27,13 +27,15 @@ class Product {
     }
 
     return Product(
-      id: json['id'] ?? '',
+      id: json['unique_id'] ?? '',
       name: json['name'] ?? '',
-      imageUrls: imageUrls, // Change this to handle list of URLs
+      imageUrls: imageUrls,
       price: (json['current_price'] != null && json['current_price'].isNotEmpty && json['current_price'][0]['NGN'] != null)
-          ? json['current_price'][0]['NGN'][0].toDouble()
+          ? (json['current_price'][0]['NGN'][0] is int
+              ? (json['current_price'][0]['NGN'][0] as int).toDouble()
+              : json['current_price'][0]['NGN'][0].toDouble())
           : 0.0,
-      availableQuantity: json['available_quantity'] ?? 0,
+      availableQuantity: json['available_quantity'] != null ? json['available_quantity'].toInt() : 0,
       description: json['description'] ?? '',
     );
   }
