@@ -16,7 +16,7 @@ The Shopping Cart App is a mobile application that provides a seamless shopping 
 ## Screenshots
 **Splash Screen**
 
-<img src="Screenshot/splash.png" alt="Splash Screen" width="300">      
+<img src="Screenshot/Splash.png" alt="Splash Screen" width="300">      
 
 **Products List**
 
